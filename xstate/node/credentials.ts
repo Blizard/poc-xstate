@@ -1,9 +1,10 @@
 import { assign } from 'xstate'
-import { TMachineContext } from '../machine.types'
+import { TMachineContext, TMachineEvent } from '../machine.types'
 
-export type CredentialsValues = Omit<Credentials, 'isFilled'>
-
-export type CredentialsFormEvent = { type: 'SET_CREDENTIALS', values: CredentialsValues }
+export enum GENDER {
+  MAN = 'MAN',
+  WOMAN = 'WOMAN'
+}
 
 export interface Credentials {
   isFilled: boolean
@@ -11,7 +12,7 @@ export interface Credentials {
   surname: string
   age: number
   email: string,
-  gender: 'MAN' | 'WOMAN'
+  gender: GENDER
 }
 
 export const credentials = {
@@ -20,13 +21,13 @@ export const credentials = {
   surname: '',
   age: 0,
   email: '',
-  gender: 'MAN'
+  gender: GENDER.MAN
 }
 
-export const setCredentials = assign<TMachineContext, CredentialsFormEvent>({
-  credentials: (context, event) => ({ ...event.values, isFilled: true })
+export const setCredentials = assign<TMachineContext, TMachineEvent>({
+  credentials: (context, { values }) => ({ ...values, isFilled: true })
 })
 
-export const isMan = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === 'MAN'
+export const isMan = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === GENDER.MAN
 
-export const isWoman = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === 'WOMAN'
+export const isWoman = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === GENDER.WOMAN

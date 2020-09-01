@@ -16,13 +16,11 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     machine.service.start()
     machine.service.onTransition((state) => {
-
       if (state.history && state.history?.value) {
-        console.debug('SAVING PREVIOUS COLLECTED DATA TO BE')
-        console.debug(machine.context[state.history?.value])
         console.log('transition from ', state.history.value, ' to ', state.value)
+      } else {
+        console.log('transition to ', state.value)
       }
-      console.log('transition to ', state.value)
     })
   }, [])
 

@@ -1,36 +1,38 @@
-import { MachineConfig } from 'xstate'
+import { MachineConfig, MachineOptions } from 'xstate'
 
 import { credentials, isMan, isWoman, setCredentials } from './node/credentials'
 import { womanData } from './node/woman'
 import { dummyFetch, manData, setDummyList } from './node/man'
 import { result } from './node/result'
-import { TMachineContext, TMachineEvent, TMachineSchema } from './machine.types'
+import { MachineEvents, MachineState, TMachineContext, TMachineEvent, TMachineSchema } from './machine.types'
 import { loaded, loading } from './actions/loading'
 
 export const initialContext = { credentials, man: manData, woman: womanData, result, loading: false }
 
 export const machineConfig: MachineConfig<TMachineContext, TMachineSchema, TMachineEvent> = {
   id: "machine",
-  initial: "welcome",
+  initial: MachineState.welcome,
   context: initialContext,
   states: {
-    welcome: {
-      on: { START: 'credentials' }
+    [MachineState.welcome]: {
+      on: { START: MachineState.credentials }
     },
-    credentials: {
+    [MachineState.credentials]: {
       always: [
-        { target: 'man', cond: 'isMan' },
-        { target: 'woman', cond: 'isWoman' }
+        { target: MachineState.man, cond: 'isMan' },
+        { target: MachineState.woman, cond: 'isWoman' }
       ],
       on: {
-        CONTINUE: {
-          target: 'credentials',
-          actions: 'setCredentials'
+        [MachineEvents.CONTINUE]: {
+          target: MachineState.credentials,
+          actions: ['setCredentials']
         }
       }
     },
-    man: {
-      on: { CONTINUE: 'result' },
+    [MachineState.man]: {
+      on: {
+        [MachineEvents.CONTINUE]: MachineState.result
+      },
       entry: ['loading'],
       invoke: {
         id: 'dummyFetch',
@@ -39,30 +41,33 @@ export const machineConfig: MachineConfig<TMachineContext, TMachineSchema, TMach
           actions: [setDummyList, 'loaded']
         },
         onError: {
-          target: 'error',
+          target: MachineState.error,
           actions: ['loaded']
         }
       }
     },
-    woman: {
-      on: { CONTINUE: 'result' }
+    [MachineState.woman]: {
+      on: { [MachineEvents.CONTINUE]: MachineState.result }
     },
-    result: {
-      on: { NEW: 'credentials' }
+    [MachineState.result]: {
+      on: { [MachineEvents.NEW]: MachineState.credentials }
     },
-    error: {
+    [MachineState.error]: {
 
     }
   }
 }
 
-export const machineOptions = {
+export const machineOptions: MachineOptions<TMachineContext, TMachineEvent> = {
   actions: {
     setCredentials, loading, loaded
   },
   guards: {
     isMan, isWoman
-  }
+  },
+  activities: {},
+  delays: {},
+  services: {}
 }
 
 
