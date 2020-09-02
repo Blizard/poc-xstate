@@ -1,10 +1,12 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext } from 'react'
+
 import { MachineContext } from '../xstate/machine.context'
+import { MachineEvents } from '../xstate/machine.types'
 
 export default function Home() {
   const machine = useContext(MachineContext)
 
-  const onClickHandler = () => machine.send({ type: 'START' })
+  const onClickHandler = () => machine.send({ type: MachineEvents.START })
 
   return (
     <main>

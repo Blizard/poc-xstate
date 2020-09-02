@@ -16,6 +16,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   useEffect(() => {
     machine.service.start()
     machine.service.onTransition((state) => {
+      console.log(state)
       if (state.history && state.history?.value) {
         console.log('transition from ', state.history.value, ' to ', state.value)
       } else {

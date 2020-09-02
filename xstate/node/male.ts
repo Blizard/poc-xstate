@@ -13,15 +13,15 @@ export interface Item {
   surname: string
 }
 
-export interface ManData {
+export interface MaleData {
   dummyData: Item[]
 }
 
-export const manData = {
+export const maleData = {
   dummyData: []
 }
 
 export const dummyFetch = () => fetch('https://run.mocky.io/v3/2cdaf6e1-abcf-418a-a225-0637183d345b?mocky-delay=2000ms')
   .then((response) => response.json())
 
-export const setDummyList = assign<TMachineContext, FetchEvent>({ man: (context, event) => ({ ...context.man, dummyData: event.data.list }) })
+export const setDummyList = assign<TMachineContext, FetchEvent>({ male: (context, event) => ({ ...context.male, dummyData: event.data.list }) })

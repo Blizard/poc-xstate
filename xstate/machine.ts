@@ -1,16 +1,16 @@
 import { MachineConfig, MachineOptions } from 'xstate'
 
-import { credentials, isMan, isWoman, setCredentials } from './node/credentials'
-import { womanData } from './node/woman'
-import { dummyFetch, manData, setDummyList } from './node/man'
-import { result } from './node/result'
+import { credentials, isMale, isFemale, setCredentials } from './node/credentials'
+import { setFemaleData, femaleData } from './node/female'
+import { dummyFetch, maleData, setDummyList } from './node/male'
+import { resetContext, result } from './node/result'
 import { MachineEvents, MachineState, TMachineContext, TMachineEvent, TMachineSchema } from './machine.types'
 import { loaded, loading } from './actions/loading'
 
-export const initialContext = { credentials, man: manData, woman: womanData, result, loading: false }
+export const initialContext = { credentials, male: maleData, female: femaleData, result, loading: false }
 
 export const machineConfig: MachineConfig<TMachineContext, TMachineSchema, TMachineEvent> = {
-  id: "machine",
+  id: 'machine',
   initial: MachineState.welcome,
   context: initialContext,
   states: {
@@ -19,17 +19,17 @@ export const machineConfig: MachineConfig<TMachineContext, TMachineSchema, TMach
     },
     [MachineState.credentials]: {
       always: [
-        { target: MachineState.man, cond: 'isMan' },
-        { target: MachineState.woman, cond: 'isWoman' }
+        { target: MachineState.male, cond: 'isMale' },
+        { target: MachineState.female, cond: 'isFemale' }
       ],
       on: {
         [MachineEvents.CONTINUE]: {
           target: MachineState.credentials,
-          actions: ['setCredentials']
+          actions: 'setCredentials'
         }
       }
     },
-    [MachineState.man]: {
+    [MachineState.male]: {
       on: {
         [MachineEvents.CONTINUE]: MachineState.result
       },
@@ -46,11 +46,21 @@ export const machineConfig: MachineConfig<TMachineContext, TMachineSchema, TMach
         }
       }
     },
-    [MachineState.woman]: {
-      on: { [MachineEvents.CONTINUE]: MachineState.result }
+    [MachineState.female]: {
+      on: {
+        [MachineEvents.CONTINUE]: {
+          target: MachineState.result,
+          actions: ['setFemaleData']
+        }
+      }
     },
     [MachineState.result]: {
-      on: { [MachineEvents.NEW]: MachineState.credentials }
+      on: {
+        [MachineEvents.NEW]: {
+          target: MachineState.welcome,
+          actions: ['resetContext']
+        }
+      }
     },
     [MachineState.error]: {
 
@@ -60,10 +70,10 @@ export const machineConfig: MachineConfig<TMachineContext, TMachineSchema, TMach
 
 export const machineOptions: MachineOptions<TMachineContext, TMachineEvent> = {
   actions: {
-    setCredentials, loading, loaded
+    setCredentials, setFemaleData, loading, loaded, resetContext
   },
   guards: {
-    isMan, isWoman
+    isMale, isFemale
   },
   activities: {},
   delays: {},

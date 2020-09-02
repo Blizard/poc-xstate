@@ -1,14 +1,16 @@
 import React, { useContext } from 'react'
+
 import { MachineContext } from '../xstate/machine.context'
 import { Loader } from '../components/loader'
+import { MachineEvents } from '../xstate/machine.types'
 
-export default function Man() {
+export default function Male() {
   const machine = useContext(MachineContext)
 
-  const data = machine.context.man.dummyData
+  const data = machine.context.male.dummyData
   const loading = machine.context.loading
 
-  const onClickHandler = () => machine.send({ type: 'CONTINUE' })
+  const onClickHandler = () => machine.send({ type: MachineEvents.CONTINUE })
 
   return (
     <main>

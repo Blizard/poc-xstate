@@ -2,8 +2,8 @@ import { assign } from 'xstate'
 import { TMachineContext, TMachineEvent } from '../machine.types'
 
 export enum GENDER {
-  MAN = 'MAN',
-  WOMAN = 'WOMAN'
+  MALE = 'MALE',
+  FEMALE = 'FEMALE'
 }
 
 export interface Credentials {
@@ -21,13 +21,13 @@ export const credentials = {
   surname: '',
   age: 0,
   email: '',
-  gender: GENDER.MAN
+  gender: GENDER.MALE
 }
 
-export const setCredentials = assign<TMachineContext, TMachineEvent>({
-  credentials: (context, { values }) => ({ ...values, isFilled: true })
+export const setCredentials = assign<TMachineContext, TMachineEvent<Credentials>>({
+  credentials: (context, { data }) => ({ ...data, isFilled: true })
 })
 
-export const isMan = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === GENDER.MAN
+export const isMale = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === GENDER.MALE
 
-export const isWoman = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === GENDER.WOMAN
+export const isFemale = ({ credentials }: TMachineContext) => credentials.isFilled && credentials.gender === GENDER.FEMALE
